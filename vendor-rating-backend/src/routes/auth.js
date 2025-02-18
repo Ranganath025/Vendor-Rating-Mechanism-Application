@@ -21,7 +21,7 @@ router.post('/signup', async (req, res) => {
     // Trim password before hashing
     const trimmedPassword = password.trim();
 
-    // ✅ Hash password before saving (only ONCE)
+    //  Hash password before saving (only ONCE)
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(trimmedPassword, salt);
 
@@ -30,7 +30,7 @@ router.post('/signup', async (req, res) => {
     user = new User({
       username,
       email,
-      password: hashedPassword, // ✅ Save only the hashed password
+      password: hashedPassword, //  Save only the hashed password
       role,
     });
 

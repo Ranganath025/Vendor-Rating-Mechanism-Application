@@ -1,3 +1,4 @@
+// src/components/Login.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../axios";
@@ -26,14 +27,30 @@ const Login = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <div className="auth-container">
-      <h2>Login</h2>
-      <form onSubmit={onSubmit}>
-        <input type="email" name="email" placeholder="Email" value={formData.email} onChange={onChange} required />
-        <input type="password" name="password" placeholder="Password" value={formData.password} onChange={onChange} required />
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Login</button>
-      </form>
+    <div className="auth-wrapper">
+      <div className="auth-card">
+        <h2>Login</h2>
+        <form onSubmit={onSubmit}>
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            value={formData.email}
+            onChange={onChange}
+            required
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={onChange}
+            required
+          />
+          {error && <p className="error">{error}</p>}
+          <button type="submit">Login</button>
+        </form>
+      </div>
     </div>
   );
 };

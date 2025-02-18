@@ -1,16 +1,36 @@
+// src/App.js
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes, Link, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  Link,
+  Navigate,
+} from "react-router-dom";
 import Signup from "./components/Signup";
 import Login from "./components/Login";
 import VendorManagement from "./components/VendorManagement";
 import VendorRating from "./components/VendorRating";
+import Navbar from "./components/Navbar"; // NEW
 import "./App.css";
 
-const Dashboard = ({ isAuthenticated, handleLogout }) => {
+const Dashboard = ({ isAuthenticated }) => {
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">Vendor Rating System</h1>
-      <p className="dashboard-subtitle">Manage and Rate Vendors</p>
+      {/* Hero/Feature Banner */}
+      <div className="hero-banner">
+        <h1>Vendor Rating System</h1>
+        <p>Manage and Rate Your Vendors Seamlessly</p>
+        {!isAuthenticated && (
+          <div className="hero-cta">
+            <Link to="/signup" className="btn-primary">
+              Get Started
+            </Link>
+          </div>
+        )}
+      </div>
+
+      {/* Cards Section */}
       <div className="card-container">
         {!isAuthenticated ? (
           <>
@@ -33,10 +53,6 @@ const Dashboard = ({ isAuthenticated, handleLogout }) => {
               <h3>View Ratings</h3>
               <p>See vendor performance</p>
             </Link>
-            <button onClick={handleLogout} className="card logout-card">
-              <h3>Logout</h3>
-              <p>Exit your account</p>
-            </button>
           </>
         )}
       </div>
@@ -64,12 +80,39 @@ const App = () => {
   return (
     <Router>
       <div className="app-container">
-        <Dashboard isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+        {/* Top Navbar */}
+        <Navbar isAuthenticated={isAuthenticated} handleLogout={handleLogout} />
+
+        {/* Main Content */}
         <Routes>
-          <Route path="/signup" element={<Signup setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/login" element={<Login setIsAuthenticated={setIsAuthenticated} />} />
-          <Route path="/vendors" element={isAuthenticated ? <VendorManagement /> : <Navigate to="/login" />} />
-          <Route path="/ratings" element={isAuthenticated ? <VendorRating /> : <Navigate to="/login" />} />
+          <Route
+            path="/"
+            element={<Dashboard isAuthenticated={isAuthenticated} />}
+          />
+          <Route
+            path="/signup"
+            element={<Signup setIsAuthenticated={setIsAuthenticated} />}
+          />
+          <Route
+            path="/login"
+            element={<Login setIsAuthenticated={setIsAuthenticated} />}
+          />
+          <Route
+            path="/vendors"
+            element={
+              isAuthenticated ? (
+                <VendorManagement />
+              ) : (
+                <Navigate to="/login" />
+              )
+            }
+          />
+          <Route
+            path="/ratings"
+            element={
+              isAuthenticated ? <VendorRating /> : <Navigate to="/login" />
+            }
+          />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>

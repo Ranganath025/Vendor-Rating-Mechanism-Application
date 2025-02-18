@@ -8,5 +8,5 @@ const UserSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
-// ✅ Prevent Overwriting Model
+
 module.exports = mongoose.models.User || mongoose.model("User", UserSchema);

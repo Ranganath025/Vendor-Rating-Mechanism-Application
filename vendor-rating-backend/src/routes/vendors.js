@@ -64,12 +64,12 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
-// Update Vendor Rating
+// ✅ Corrected PUT Route: Update Vendor Ratings and Details
 router.put("/rate/:id", authMiddleware, async (req, res) => {
-  const { bestPrice, timelyDelivery, rejectionRate } = req.body;
-
   try {
     console.log(`📥 Updating Vendor ID: ${req.params.id}`);
+    
+    const { name, contact, email, address, bestPrice, timelyDelivery, rejectionRate } = req.body;
     
     let vendor = await Vendor.findById(req.params.id);
     if (!vendor) {
@@ -82,17 +82,24 @@ router.put("/rate/:id", authMiddleware, async (req, res) => {
       return res.status(400).json({ message: "All rating fields are required!" });
     }
 
+    // Update Vendor Details
+    vendor.name = name || vendor.name;
+    vendor.contact = contact || vendor.contact;
+    vendor.email = email || vendor.email;
+    vendor.address = address || vendor.address;
     vendor.bestPrice = bestPrice;
     vendor.timelyDelivery = timelyDelivery;
     vendor.rejectionRate = rejectionRate;
+
+    // Recalculate Rating Score
     vendor.ratingScore = calculateRating(bestPrice, timelyDelivery, rejectionRate);
 
     await vendor.save();
-    console.log("✅ Vendor Rating Updated:", vendor);
+    console.log("✅ Vendor Rating & Details Updated:", vendor);
     res.json(vendor);
   } catch (err) {
-    console.error("❌ Error Updating Vendor Rating:", err.message);
-    res.status(500).json({ message: "Error updating rating", error: err.message });
+    console.error("❌ Error Updating Vendor:", err.message);
+    res.status(500).json({ message: "Error updating vendor", error: err.message });
   }
 });
 

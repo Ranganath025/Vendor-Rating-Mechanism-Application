@@ -1,124 +1,118 @@
-.vendor-container {
-  width: 90%;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 20px;
-  background: rgba(0, 0, 0, 0.7);  /* Dark translucent background */
+/* src/components/VendorManagement.css */
+
+/* Container */
+.vendor-management-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  background-color: #fff;
   border-radius: 8px;
-  color: #fff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-.vendor-container h2 {
-  margin-bottom: 20px;
-  font-size: 1.8rem;
+.vendor-management-container h2 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #6a1b9a;
 }
 
-/* Vendor Form - using flex for two columns on larger screens */
-.vendor-container form {
+.vendor-management-container h3 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Form */
+.vendor-form {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.vendor-container form input {
-  padding: 10px;
-  width: calc(50% - 10px);  /* two columns */
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  border-radius: 5px;
-  background: transparent;
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.vendor-form input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.submit-btn {
+  background-color: #6a1b9a;
   color: #fff;
-}
-
-.vendor-container form button {
-  padding: 10px 15px;
-  background-color: #3498db;
   border: none;
-  border-radius: 5px;
-  color: white;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
   cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  transition: background 0.3s ease;
+  font-size: 1rem;
+  align-self: flex-end;
+  transition: background 0.3s;
 }
 
-.vendor-container form button:hover {
-  background-color: #2980b9;
+.submit-btn:hover {
+  background-color: #4a116b;
 }
 
-/* Vendor Table Styles */
+/* Table */
+.table-wrapper {
+  overflow-x: auto;
+}
+
 .vendor-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
-  display: block; /* Allow horizontal scrolling on small screens */
-  overflow-x: auto;
 }
 
 .vendor-table th,
 .vendor-table td {
-  padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.75rem;
   text-align: center;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.95rem;
 }
 
 .vendor-table th {
-  background-color: #6a1b9a;
-  color: #fff;
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: 600;
 }
 
-.vendor-table td {
-  color: #fff;
-}
-
-/* Action Buttons */
-.edit-btn, .delete-btn {
-  padding: 5px 10px;
+.edit-btn,
+.delete-btn {
+  padding: 0.4rem 0.8rem;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  transition: opacity 0.3s ease;
-  font-size: 0.9rem;
+  margin-right: 4px;
+  font-size: 0.85rem;
+  transition: opacity 0.3s;
 }
 
 .edit-btn {
   background-color: #2ecc71;
-  color: white;
-  margin-right: 5px;
+  color: #fff;
 }
 
 .delete-btn {
   background-color: #e74c3c;
-  color: white;
+  color: #fff;
 }
 
 .edit-btn:hover,
 .delete-btn:hover {
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
-/* Responsive Styles */
+/* Responsive */
 @media (max-width: 768px) {
-  .vendor-container {
-    padding: 15px;
-  }
-  .vendor-container form input {
-    width: calc(100% - 10px); /* full width on medium screens */
-  }
-  .vendor-table th, .vendor-table td {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .vendor-container form {
+  .form-row {
     flex-direction: column;
-    align-items: center;
   }
-  .vendor-container form input {
+  .submit-btn {
     width: 100%;
   }
 }
