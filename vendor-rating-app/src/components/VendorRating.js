@@ -1,4 +1,3 @@
-// src/components/VendorRating.js
 import React, { useEffect, useState } from "react";
 import axios from "../axios";
 import {
@@ -26,9 +25,10 @@ const VendorRating = () => {
       const res = await axios.get("/api/vendors", {
         headers: { Authorization: `Bearer ${token}` },
       });
+      console.log("📊 Updated Vendors Data:", res.data);
       setVendors(res.data);
     } catch (err) {
-      console.error("Error fetching vendors:", err);
+      console.error("❌ Error fetching vendors:", err);
     }
   };
 
@@ -37,19 +37,13 @@ const VendorRating = () => {
       <h2>Vendor Ratings</h2>
       <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart
-            data={vendors}
-            margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-          >
+          <BarChart data={vendors} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#ccc" />
             <XAxis dataKey="name" stroke="#333" />
             <YAxis stroke="#333" />
-            <Tooltip
-              contentStyle={{ background: "#fff", border: "1px solid #ddd" }}
-              labelStyle={{ color: "#333" }}
-            />
+            <Tooltip contentStyle={{ background: "#fff", border: "1px solid #ddd" }} />
             <Legend />
-            <Bar dataKey="ratingScore" fill="#6a1b9a" name="Rating Score" />
+            <Bar dataKey="rating.score" fill="#6a1b9a" name="Rating Score" />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -69,10 +63,10 @@ const VendorRating = () => {
             {vendors.map((vendor) => (
               <tr key={vendor._id}>
                 <td>{vendor.name}</td>
-                <td>{vendor.bestPrice}</td>
-                <td>{vendor.timelyDelivery}</td>
-                <td>{vendor.rejectionRate}</td>
-                <td>{vendor.ratingScore}</td>
+                <td>{vendor.rating?.price || "N/A"}</td>
+                <td>{vendor.rating?.delivery || "N/A"}</td>
+                <td>{vendor.rating?.rejection !== undefined ? vendor.rating.rejection : "N/A"}</td>
+                <td>{vendor.rating?.score || "N/A"}</td>
               </tr>
             ))}
           </tbody>

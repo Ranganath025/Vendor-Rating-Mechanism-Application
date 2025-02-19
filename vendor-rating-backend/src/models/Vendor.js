@@ -5,30 +5,26 @@ const VendorSchema = new mongoose.Schema({
   contact: String,
   email: { type: String, required: true },
   address: String,
-  bestPrice: { type: Number, required: true }, // Lower price is better
-  timelyDelivery: { type: Number, required: true }, // % of on-time deliveries
-  rejectionRate: { type: Number, required: true }, // Lower is better
-  ratingScore: { type: Number, default: 0 }, // Final computed rating
+  rating: {
+    price: { type: Number, required: true },
+    delivery: { type: Number, required: true },
+    rejection: { type: Number, required: true },
+    score: { type: Number, default: 0 },
+  },
 });
 
 // Calculate rating before saving
 VendorSchema.pre("save", function (next) {
-  const { bestPrice, timelyDelivery, rejectionRate } = this;
-  this.ratingScore = calculateRating(bestPrice, timelyDelivery, rejectionRate);
+  this.rating.score = calculateRating(
+    this.rating.price,
+    this.rating.delivery,
+    this.rating.rejection
+  );
   next();
 });
 
-// Rating Calculation Function
-function calculateRating(bestPrice, timelyDelivery, rejectionRate) {
-  const priceWeight = 30;  // Lower price = higher score
-  const deliveryWeight = 40; // Higher % = better
-  const rejectionWeight = 30; // Lower % = better
-
-  return (
-    (100 / bestPrice) * priceWeight +
-    timelyDelivery * deliveryWeight -
-    rejectionRate * rejectionWeight
-  ).toFixed(2);
+function calculateRating(price, delivery, rejection) {
+  return (100 / price) * 30 + delivery * 40 - rejection * 30;
 }
 
 module.exports = mongoose.model("Vendor", VendorSchema);
