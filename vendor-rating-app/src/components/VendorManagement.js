@@ -14,6 +14,7 @@ const VendorManagement = () => {
     rejection: "",
   });
   const [editingVendor, setEditingVendor] = useState(null);
+
   const token = localStorage.getItem("token");
 
   // Fetch vendors
@@ -25,29 +26,28 @@ const VendorManagement = () => {
       setVendors(res.data);
     } catch (err) {
       console.error("❌ Error Fetching Vendors:", err.response?.data || err.message);
+      alert("❌ Error fetching vendors. Please try again.");
     }
   }, [token]);
 
   useEffect(() => {
-    fetchVendors();
-  }, [fetchVendors]);
+    if (token) {
+      fetchVendors();
+    } else {
+      alert("❌ You need to log in first.");
+    }
+  }, [fetchVendors, token]);
 
-  // Handle form field changes
   const onChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle vendor submission (Add/Update)
   const onSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.contact || !formData.email || !formData.address) {
-      alert("❌ Error: All vendor details are required.");
-      return;
-    }
-
-    if (!formData.price || !formData.delivery || !formData.rejection) {
-      alert("❌ Error: All rating fields (price, delivery, rejection) are required.");
+    if (!formData.name || !formData.contact || !formData.email || !formData.address ||
+        !formData.price || !formData.delivery || !formData.rejection) {
+      alert("❌ Error: All fields are required.");
       return;
     }
 
@@ -85,14 +85,13 @@ const VendorManagement = () => {
       });
 
       setEditingVendor(null);
-      fetchVendors(); // Refresh vendor list
+      fetchVendors();
     } catch (err) {
       console.error("❌ Error:", err.response?.data || err.message);
       alert(`❌ Error: ${err.response?.data?.message || "Something went wrong"}`);
     }
   };
 
-  // Handle vendor edit action
   const onEdit = (vendor) => {
     setEditingVendor(vendor);
     setFormData({
@@ -106,7 +105,6 @@ const VendorManagement = () => {
     });
   };
 
-  // Handle vendor deletion
   const onDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this vendor?")) {
       try {
@@ -117,13 +115,51 @@ const VendorManagement = () => {
         fetchVendors();
       } catch (err) {
         console.error("❌ Error Deleting Vendor:", err.response?.data || err.message);
+        alert("❌ Error deleting vendor. Please try again.");
       }
+    }
+  };
+
+  const exportCSV = async () => {
+    try {
+      const response = await axios.get("/api/vendors/export/csv", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "vendors.csv");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("❌ Error exporting CSV:", error);
+    }
+  };
+
+  const exportPDF = async () => {
+    try {
+      const response = await axios.get("/api/vendors/export/pdf", {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "vendors.pdf");
+      document.body.appendChild(link);
+      link.click();
+    } catch (error) {
+      console.error("❌ Error exporting PDF:", error);
     }
   };
 
   return (
     <div className="vendor-management-container">
       <h2>Vendor Management</h2>
+      
       <form onSubmit={onSubmit} className="vendor-form">
         <input type="text" name="name" value={formData.name} onChange={onChange} required placeholder="Vendor Name" />
         <input type="text" name="contact" value={formData.contact} onChange={onChange} required placeholder="Contact" />
@@ -138,31 +174,45 @@ const VendorManagement = () => {
         <button type="submit">{editingVendor ? "Update Vendor" : "Add Vendor"}</button>
       </form>
 
+      <div className="export-buttons">
+        <button onClick={exportCSV}>📄 Export CSV</button>
+        <button onClick={exportPDF}>📄 Export PDF</button>
+      </div>
+
       <h3>Vendor List</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th><th>Contact</th><th>Email</th><th>Address</th><th>Price</th><th>Delivery</th><th>Rejection</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {vendors.map((vendor) => (
-            <tr key={vendor._id}>
-              <td>{vendor.name}</td>
-              <td>{vendor.contact}</td>
-              <td>{vendor.email}</td>
-              <td>{vendor.address}</td>
-              <td>{vendor.rating?.price}</td>
-              <td>{vendor.rating?.delivery}</td>
-              <td>{vendor.rating?.rejection}</td>
-              <td>
-                <button onClick={() => onEdit(vendor)}>Edit</button>
-                <button onClick={() => onDelete(vendor._id)}>Delete</button>
-              </td>
+      <div className="table-wrapper">
+        <table className="vendor-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Contact</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th>Price</th>
+              <th>Delivery</th>
+              <th>Rejection</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {vendors.map((vendor) => (
+              <tr key={vendor._id}>
+                <td>{vendor.name}</td>
+                <td>{vendor.contact}</td>
+                <td>{vendor.email}</td>
+                <td>{vendor.address}</td>
+                <td>{vendor.rating?.price}</td>
+                <td>{vendor.rating?.delivery}</td>
+                <td>{vendor.rating?.rejection}</td>
+                <td className="action-buttons">
+                  <button className="edit-btn" onClick={() => onEdit(vendor)}>Edit</button>
+                  <button className="delete-btn" onClick={() => onDelete(vendor._id)}>Delete</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

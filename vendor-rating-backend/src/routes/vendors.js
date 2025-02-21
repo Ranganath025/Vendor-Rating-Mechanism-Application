@@ -135,5 +135,43 @@ router.delete("/:id", authMiddleware, async (req, res) => {
   }
 });
 
+const { Parser } = require("json2csv");
+const PDFDocument = require("pdfkit");
+
+router.get("/export/csv", async (req, res) => {
+  try {
+    const vendors = await Vendor.find();
+    const fields = ["name", "rating.price", "rating.delivery", "rating.rejection", "rating.score"];
+    const parser = new Parser({ fields });
+    const csv = parser.parse(vendors);
+    res.attachment("vendors.csv").send(csv);
+  } catch (err) {
+    res.status(500).json({ message: "CSV Export Error" });
+  }
+});
+
+router.get("/export/pdf", async (req, res) => {
+  try {
+    const vendors = await Vendor.find();
+    const doc = new PDFDocument();
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=vendors.pdf");
+
+    doc.text("Vendor Performance Report", { align: "center" }).moveDown();
+    vendors.forEach(vendor => {
+      doc.text(`${vendor.name}: Score - ${vendor.rating.score}`);
+    });
+
+    doc.pipe(res);
+    doc.end();
+  } catch (err) {
+    res.status(500).json({ message: "PDF Export Error" });
+  }
+});
+
+
+
+
+
 
 module.exports = router;
